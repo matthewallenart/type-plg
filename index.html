@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive M Shape with Mouse Cursor</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: 'Poppins', Arial, sans-serif;
+      width: 100vw;
+      min-height: 100vh;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 48px 3rem;
+      box-sizing: border-box;
+      gap: 20px;
+    }
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .header .left {
+      font-weight: 400;
+      font-size: 20px;
+    }
+    .header .right {
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 3.36px;
+      text-transform: uppercase;
+    }
+    .interactive-m {
+      width: 100%;
+      height: 354px;
+      position: relative;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: all 75ms ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="left">Type-plg</div>
+      <div class="right">Made by matt</div>
+    </div>
+    <div class="interactive-m" id="interactive-m">
+      <svg id="m-svg" fill="none" preserveAspectRatio="none" viewBox="0 0 1344 354">
+        <path id="m-path" fill="white" />
+      </svg>
+    </div>
+  </div>
+  <script>
+    // Original M path dimensions and points
+    const originalWidth = 1344;
+    const originalHeight = 354;
+    const originalCenterX = 665.948;
+    const originalCenterY = 212.5;
+
+    // Helper to generate the dynamic path
+    function getDynamicPath(mouseX, isHovering) {
+      let newCenterX = originalCenterX;
+      if (isHovering) {
+        const viewportWidth = window.innerWidth;
+        const minX = originalWidth * 0.3;
+        const maxX = originalWidth * 0.7;
+        const normalizedX = mouseX / viewportWidth;
+        newCenterX = minX + (normalizedX * (maxX - minX));
+      }
+      const centerY = originalCenterY;
+      const leftInnerX = newCenterX * 0.527;
+      const rightInnerX = newCenterX * 1.221;
+      const bottomCenterX = newCenterX * 0.771;
+      return `M1344 0V354H994.971V177.5L${rightInnerX} 354H${bottomCenterX}L${leftInnerX} 177.5V354H0V0H429.575L${newCenterX} ${centerY}L916.005 0H1344Z`;
+    }
+
+    const mPath = document.getElementById('m-path');
+    const mDiv = document.getElementById('interactive-m');
+    let isHovering = false;
+    let mouseX = 0;
+
+    // Set initial path
+    mPath.setAttribute('d', getDynamicPath(mouseX, false));
+
+    mDiv.addEventListener('mouseenter', () => {
+      isHovering = true;
+    });
+    mDiv.addEventListener('mouseleave', () => {
+      isHovering = false;
+      mPath.setAttribute('d', getDynamicPath(mouseX, false));
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isHovering) {
+        mouseX = e.clientX;
+        mPath.setAttribute('d', getDynamicPath(mouseX, true));
+      }
+    });
+  </script>
+</body>
+</html> 
